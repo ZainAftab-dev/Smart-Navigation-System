@@ -7,7 +7,7 @@ A console-based intelligent navigation system that demonstrates advanced Data St
 ## Project Information
 
 **Course:** Data Structures and Algorithms Lab  
-**Institution:** [Your University Name]  
+**Institution:** COMSATS University Islamabad 
 **Semester:** 3rd Semester  
 
 ### Group Members
