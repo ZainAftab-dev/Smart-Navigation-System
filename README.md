@@ -11,6 +11,8 @@ A route planner for Lahore, with a C++ console app and an interactive web map, t
 
 ![Web](https://img.shields.io/badge/web-HTML%20%7C%20CSS%20%7C%20JS-0b6e69)
 
+**[▶ Live demo: lahore-route-planner.vercel.app](https://lahore-route-planner.vercel.app)**
+
 <img src="docs/web.png" alt="Web route planner showing the fastest route from DHA to Canal Road on a schematic Lahore map" width="820"/>
 
 </div>
@@ -39,7 +41,7 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-To publish it, enable GitHub Pages for the repository and point it at the `web/` folder (or copy the folder to any static host).
+It is deployed on Vercel at **[lahore-route-planner.vercel.app](https://lahore-route-planner.vercel.app)** (project root: `web/`).
 
 ## Console version
 
