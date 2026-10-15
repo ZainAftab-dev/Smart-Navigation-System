@@ -1,0 +1,7 @@
+Overpass and Overpass Mono
+Copyright 2016 The Overpass Project Authors (https://github.com/RedHatOfficial/Overpass)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+The full license text is available at https://openfontlicense.org/open-font-license-official-text/
+
+The font files in this folder are unmodified subsets distributed by Fontsource (https://fontsource.org).

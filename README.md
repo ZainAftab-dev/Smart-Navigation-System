@@ -2,20 +2,50 @@
 
 # 🗺️ Smart Navigation System
 
-A console route planner for Lahore that finds the shortest path with **Dijkstra's algorithm**, reacts to live traffic, and estimates fuel, time and cost for every trip. Built in C++ to demonstrate core data structures and algorithms.
+A route planner for Lahore, with a C++ console app and an interactive web map, that finds the shortest path with **Dijkstra's algorithm**, reacts to live traffic, and estimates fuel, time and cost for every trip. Built in C++ to demonstrate core data structures and algorithms.
 
 ![C++](https://img.shields.io/badge/C%2B%2B-11-00599C?logo=cplusplus&logoColor=white)
 ![Algorithm](https://img.shields.io/badge/algorithm-Dijkstra-orange)
 ![Dependencies](https://img.shields.io/badge/dependencies-STL%20only-brightgreen)
 ![Course](https://img.shields.io/badge/COMSATS-DSA%20Lab-1B2A49)
 
-<img src="docs/screenshot.png" alt="Shortest path from DHA to Canal Road with cost estimate" width="480"/>
+![Web](https://img.shields.io/badge/web-HTML%20%7C%20CSS%20%7C%20JS-0b6e69)
+
+<img src="docs/web.png" alt="Web route planner showing the fastest route from DHA to Canal Road on a schematic Lahore map" width="820"/>
 
 </div>
 
 ---
 
-## Features
+## Web version
+
+The `web/` folder is a browser frontend for the same network and rules. It is plain HTML, CSS and JavaScript with no build step and no dependencies.
+
+- **Schematic map:** ten junction signs on a road-atlas grid; roads are coloured by traffic (grey normal, amber heavy, red dotted blocked, grey dashed closed) and labelled with their distance
+- **Route:** pick a start and destination, or click two junctions on the map. The fastest route is drawn on the map with each leg, the weighted distance, fuel, time and cost
+- **Build:** add stops one at a time to a stack, with Undo (pop), and save the route to history. Stops must be joined by an open road
+- **Traffic:** set each road to Normal, Heavy or Blocked and open or close it; clicking a road on the map jumps to it. The current route updates straight away
+- **History:** saved routes in a linked list, newest first
+- **Stats:** location and road counts, the traffic breakdown, average road length, and the locations sorted A–Z with selection sort
+- Works on phones, supports the keyboard (tabs with arrow keys, junctions with Enter), and remembers traffic and history in `localStorage`
+
+It uses the same weights and cost model as the C++ code, so DHA → Canal Road gives the same 32 km, 3.84 L, 0h 48m and $5.76.
+
+**Run it:** open `web/index.html` in a browser, or serve the folder:
+
+```bash
+cd web
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+
+To publish it, enable GitHub Pages for the repository and point it at the `web/` folder (or copy the folder to any static host).
+
+## Console version
+
+<img src="docs/screenshot.png" alt="Console output: shortest path from DHA to Canal Road with cost estimate" width="480"/>
+
+### Features
 
 | Menu option | What it does | Data structure / algorithm |
 |---|---|---|
@@ -55,7 +85,7 @@ DHA · Sadar Bazaar · Anarkali · Model Town · Gulberg · Defence Road · Cana
 
 Limits: up to 50 locations and 100 roads.
 
-## Getting started
+## Getting started (console)
 
 **Requirements:** any C++11 compiler (g++, clang++, MSVC). Only the standard library is used.
 
@@ -83,8 +113,14 @@ In Code::Blocks or Visual Studio, add `smart_navigation_system.cpp` to an empty 
 
 ```
 Smart-Navigation-System/
-├── smart_navigation_system.cpp   # all source: structs, menus, Dijkstra, stack, linked list, sorting
+├── smart_navigation_system.cpp   # console app: structs, menus, Dijkstra, stack, linked list, sorting
+├── web/
+│   ├── index.html                # web app layout: control panel and SVG map
+│   ├── style.css                 # road-atlas theme, responsive layout
+│   ├── app.js                    # network data, Dijkstra, stack, linked list, map drawing
+│   └── fonts/                    # Overpass and Overpass Mono (SIL OFL)
 └── docs/
+    ├── web.png
     └── screenshot.png
 ```
 
@@ -92,9 +128,10 @@ Main functions: `shortestPathDijkstra()`, `manualRouteBuilder()`, `pathCostEstim
 
 ## Known limitations
 
-- Data is kept in memory only; changes are lost when the program closes
+- The console app keeps data in memory only; changes are lost when the program closes
 - Fixed maximum of 50 locations and 100 roads
-- Console interface only
+- The web version uses the fixed ten-location network; adding locations and roads is only in the console app
+- The map is schematic, not geographic
 
 ## Team
 

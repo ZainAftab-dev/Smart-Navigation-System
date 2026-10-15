@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lahore Route Planner · Smart Navigation System</title>
+    <meta
+      name="description"
+      content="Find the fastest route between ten Lahore locations with Dijkstra's algorithm, live traffic, blocked roads and fuel, time and cost estimates."
+    />
+    <meta name="theme-color" content="#eef2f3" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e69'/%3E%3Ccircle cx='9' cy='22' r='4' fill='white'/%3E%3Ccircle cx='23' cy='10' r='4' fill='white'/%3E%3Cpath d='M9 22 C 14 22, 18 10, 23 10' stroke='white' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="panel" aria-label="Controls">
+        <header class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><circle cx="9" cy="22" r="4" /><circle cx="23" cy="10" r="4" /><path d="M9 22 C 14 22, 18 10, 23 10" /></svg>
+          </div>
+          <div>
+            <h1>Lahore Route Planner</h1>
+            <p>Smart Navigation System · Dijkstra's shortest path</p>
+          </div>
+        </header>
+
+        <nav class="tabs" role="tablist" aria-label="Sections">
+          <button role="tab" id="tab-route" aria-controls="view-route" aria-selected="true">Route</button>
+          <button role="tab" id="tab-build" aria-controls="view-build" aria-selected="false">Build</button>
+          <button role="tab" id="tab-traffic" aria-controls="view-traffic" aria-selected="false">Traffic</button>
+          <button role="tab" id="tab-history" aria-controls="view-history" aria-selected="false">History</button>
+          <button role="tab" id="tab-stats" aria-controls="view-stats" aria-selected="false">Stats</button>
+        </nav>
+
+        <!-- ROUTE -->
+        <section class="view" id="view-route" role="tabpanel" aria-labelledby="tab-route">
+          <form id="route-form" class="route-form">
+            <div class="field">
+              <label for="from">From</label>
+              <select id="from"></select>
+            </div>
+            <button type="button" class="swap" id="swap" aria-label="Swap start and destination" title="Swap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" /></svg>
+            </button>
+            <div class="field">
+              <label for="to">To</label>
+              <select id="to"></select>
+            </div>
+            <button type="submit" class="primary">Find fastest route</button>
+          </form>
+          <p class="hint">Tip: click a junction on the map to set the start, then another to set the destination.</p>
+          <div id="route-result" aria-live="polite"></div>
+        </section>
+
+        <!-- BUILD (stack) -->
+        <section class="view" id="view-build" role="tabpanel" aria-labelledby="tab-build" hidden>
+          <p class="lead">
+            Plan your own route stop by stop. Each stop is <strong>pushed</strong> onto a stack; <strong>Undo stop</strong> pops the
+            last one.
+          </p>
+          <div class="build-actions">
+            <select id="build-add" aria-label="Stop to add"></select>
+            <button type="button" class="primary small" id="build-push">Add stop</button>
+          </div>
+          <div id="build-result" aria-live="polite"></div>
+          <div class="build-actions">
+            <button type="button" class="ghost" id="build-pop">Undo stop</button>
+            <button type="button" class="ghost" id="build-clear">Start over</button>
+            <button type="button" class="ghost" id="build-save">Save to history</button>
+          </div>
+        </section>
+
+        <!-- TRAFFIC -->
+        <section class="view" id="view-traffic" role="tabpanel" aria-labelledby="tab-traffic" hidden>
+          <p class="lead">Change conditions and the next route search adapts. Heavy traffic counts as 1.5× the distance; blocked or closed roads are skipped.</p>
+          <ul id="road-list" class="road-list"></ul>
+          <button type="button" class="ghost" id="reset-traffic">Reset to default traffic</button>
+        </section>
+
+        <!-- HISTORY (linked list) -->
+        <section class="view" id="view-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+          <p class="lead">Saved routes, newest first. Each one is a node in a singly linked list.</p>
+          <ol id="history-list" class="history-list"></ol>
+          <button type="button" class="ghost" id="clear-history">Clear history</button>
+        </section>
+
+        <!-- STATS -->
+        <section class="view" id="view-stats" role="tabpanel" aria-labelledby="tab-stats" hidden>
+          <dl id="stats" class="stats"></dl>
+          <h2 class="subhead">Locations A–Z</h2>
+          <p class="lead small">Sorted with selection sort, as in the C++ version.</p>
+          <ol id="sorted-locations" class="sorted"></ol>
+        </section>
+
+        <footer class="credits">
+          Based on the C++ console project by Zain Aftab, Hunain Riasat, Shaheer Aftab and Ahsan Ahmed (COMSATS Lahore, DSA Lab).
+          <a href="https://github.com/ZainAftab-dev/Smart-Navigation-System">Source on GitHub</a>
+        </footer>
+      </aside>
+
+      <main class="map-wrap" aria-label="Schematic map of Lahore">
+        <svg id="map" viewBox="0 0 1000 720" role="img" aria-labelledby="map-title">
+          <title id="map-title">Schematic road map of ten Lahore locations</title>
+          <g id="roads"></g>
+          <g id="route-layer"></g>
+          <g id="labels"></g>
+          <g id="nodes"></g>
+        </svg>
+        <div class="legend" aria-label="Legend">
+          <span><i class="sw normal"></i>Normal</span>
+          <span><i class="sw heavy"></i>Heavy traffic</span>
+          <span><i class="sw blocked"></i>Blocked</span>
+          <span><i class="sw closed"></i>Closed</span>
+          <span><i class="sw route"></i>Your route</span>
+        </div>
+        <p class="map-note">Schematic map, not to scale. Distances are in kilometres.</p>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
